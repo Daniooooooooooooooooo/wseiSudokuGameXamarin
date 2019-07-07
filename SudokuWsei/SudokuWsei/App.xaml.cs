@@ -10,7 +10,7 @@ namespace SudokuWsei
         {
             InitializeComponent();
 
-            MainPage = new SudokuPage();
+            MainPage = new MainPage();
         }
 
         protected override void OnStart()

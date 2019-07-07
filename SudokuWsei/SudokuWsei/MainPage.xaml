@@ -6,34 +6,11 @@
              mc:Ignorable="d"
              x:Class="SudokuWsei.MainPage">
 
-    <StackLayout Margin="20">
-        <Label Text="CollectionView"
-               FontSize="50"
-               FontAttributes="Bold"
-               HorizontalOptions="Center" />
-
-        <CollectionView ItemsSource="{Binding Sudoku}">
-            <CollectionView.ItemsLayout>
-                <GridItemsLayout Orientation="Vertical"
-                                Span="9" />
-            </CollectionView.ItemsLayout>
-            <CollectionView.ItemTemplate>
-                <DataTemplate>
-                    <Grid Padding="10">
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="11" />
-                        </Grid.RowDefinitions>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="11" />
-                        </Grid.ColumnDefinitions>
-                        <Entry Grid.Column="1" 
-                               Text="{Binding Value}" 
-                               FontAttributes="Bold"
-                               />
-                    </Grid>
-                </DataTemplate>
-            </CollectionView.ItemTemplate>
-        </CollectionView>
+    <StackLayout>
+        <!-- Place new controls here -->
+        <Label Text="Welcome to Xamarin.Forms!" 
+           HorizontalOptions="Center"
+           VerticalOptions="CenterAndExpand" />
     </StackLayout>
 
 </ContentPage>
