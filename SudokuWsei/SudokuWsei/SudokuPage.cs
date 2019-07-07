@@ -6,18 +6,18 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Input;
 using Xamarin.Forms;
+using Xamarin.Forms.Internals;
 
 namespace SudokuWsei
 {
-    // Learn more about making custom code visible in the Xamarin.Forms previewer
-    // by visiting https://aka.ms/xamarinforms-previewer
     [DesignTimeVisible(false)]
     public partial class SudokuPage : ContentPage
     {
         public IList<SudokuItem> Sudoku { get; private set; }
 
-        public SudokuPage()
+        public SudokuPage(string sudoku)
         {
             Label header = new Label
             {
@@ -27,14 +27,10 @@ namespace SudokuWsei
                 HorizontalOptions = LayoutOptions.Center
             };
 
-            // Create the CollectionView.
             CollectionView collectionView = new CollectionView
             {
-                // Define the layout.
                 ItemsLayout = new GridItemsLayout(9, ItemsLayoutOrientation.Vertical),
 
-                // Define template for displaying each item.
-                // (Argument of DataTemplate constructor is called for each item
                 ItemTemplate = new DataTemplate(() =>
                 {
                     Grid grid = new Grid { Padding = 1 };
@@ -43,6 +39,7 @@ namespace SudokuWsei
 
                     Entry value = new Entry { FontAttributes = FontAttributes.Italic, VerticalOptions = LayoutOptions.End };
                     value.SetBinding(Entry.TextProperty, "Value");
+                    value.TextChanged += Value_TextChanged;
 
                     Grid.SetRowSpan(value, 2);
 
@@ -52,14 +49,14 @@ namespace SudokuWsei
                 })
             };
 
-            Button submit = new Button
+            Button check = new Button
             {
                 Text = "Check"
             };
+            check.Clicked += Check_Clicked;
 
             collectionView.SetBinding(ItemsView.ItemsSourceProperty, "Sudoku");
 
-            // Build the page.
             Title = "Sudoku";
             Content = new StackLayout
             {
@@ -68,24 +65,63 @@ namespace SudokuWsei
                 {
                     header,
                     collectionView,
-                    submit
+                    check
                 }
             };
 
-            CreateSudokuCollection();
+            CreateSudokuCollection(sudoku);
             BindingContext = this;
         }
 
-        void CreateSudokuCollection()
+        private void Value_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (!string.IsNullOrEmpty(e.NewTextValue))
+            {
+                var newInput = e.NewTextValue.Length == 2
+                    ? e.NewTextValue[1]
+                    : e.NewTextValue[0];
+
+                if (!int.TryParse(newInput.ToString(), out var newValue)
+                    || newValue < 1 || newValue > 9)
+                {
+                    (sender as Entry).Text = "";
+                }
+                else
+                {
+                    (sender as Entry).Text = newInput.ToString();
+                }
+            }
+        }
+
+        private async void Check_Clicked(object sender, EventArgs e)
+        {
+            var sudokuString = new StringBuilder();
+
+            foreach (var item in this.Sudoku)
+            {
+                sudokuString.Append(item.Value);
+            }
+
+            var sudokuModel = new SudokuModel(sudokuString.ToString());
+
+            if (SudokuValidator.SudokuValidator.Validate(sudokuModel))
+            {
+                await DisplayAlert("Won", "Congratulations You won", "Back");
+                await Navigation.PushAsync(new MainPage());
+            }
+            else
+            {
+                await DisplayAlert("Wrong", "Try Again!", "Back");
+            }
+        }
+
+        void CreateSudokuCollection(string sudoku)
         {
             Sudoku = new List<SudokuItem>();
 
-            for (int i = 0; i < 9; i++)
+            for (int i = 0; i < sudoku.Length; i++)
             {
-                for (int j = 0; j < 9; j++)
-                {
-                    Sudoku.Add(new SudokuItem(i, j, i * 10 + j));
-                }
+                Sudoku.Add(new SudokuItem(int.Parse(sudoku[i].ToString())));
             }
         }
     }
