@@ -107,7 +107,7 @@ namespace SudokuWsei
             if (SudokuValidator.SudokuValidator.Validate(sudokuModel))
             {
                 await DisplayAlert("Won", "Congratulations You won", "Back");
-                await Navigation.PushAsync(new MainPage());
+                await Navigation.PushModalAsync(new MainPage());
             }
             else
             {
